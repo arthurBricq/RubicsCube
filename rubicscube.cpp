@@ -13,6 +13,10 @@ enum Color {
     WHITE, RED, YELLOW, ORANGE, GREEN, BLUE, NONE 
 };
 
+enum Motion {
+    F, R, U
+};
+
 using namespace glm;
 using std::cout;
 using std::endl;
@@ -83,6 +87,22 @@ class Cube {
             orientation = angleAxis(radians(_theta), vec3(0., 0., 1.)) * orientation;
         }
 
+        void apply(const mat4 transformation) {
+            // Retrieve the current model
+            glm::mat4 model = glm::mat4(1.0f);
+            glm::mat4 rotation = glm::toMat4(orientation);
+            model = glm::translate(model, position);
+            model = model * rotation;    
+
+            // Transform
+            vec4 pos(position.x, position.y, position.z, 1.0f);
+            vec4 result = transformation * pos;
+
+            
+            // Retrieve the new state
+            position = vec3(result.x, result.y, result.z);
+        }
+
         /**
          * Fills inplace the array with the colors of the Front, Right & Top colors
          */
@@ -108,101 +128,101 @@ class RubicsCube {
 
         RubicsCube() {
 
-            // 0. CENTERS
+            // CENTERS
 
             // White
-            cubes.push_back(Cube(vec3(1., 1., 2.), Color::WHITE));
+            cubes.push_back(Cube(vec3(0., 0., 1.), Color::WHITE));
 
             // Orange
-            cubes.push_back(Cube(vec3(1., 2., 1.), Color::ORANGE));
+            cubes.push_back(Cube(vec3(0., 1., 0.), Color::ORANGE));
             cubes.back().rotate_x(-90.0f);
 
             // Red
-            cubes.push_back(Cube(vec3(1., 0., 1.), Color::RED));
+            cubes.push_back(Cube(vec3(0., -1., 0.), Color::RED));
             cubes.back().rotate_x(90.0f);
 
             // Blue
-            cubes.push_back(Cube(vec3(2., 1., 1.), Color::BLUE));
+            cubes.push_back(Cube(vec3(1., 0., 0.), Color::BLUE));
             cubes.back().rotate_y(90.0f);
 
             // Green
-            cubes.push_back(Cube(vec3(0., 1., 1.), Color::GREEN));
+            cubes.push_back(Cube(vec3(-1., 0., 0.), Color::GREEN));
             cubes.back().rotate_y(-90.0f);
 
             // Yellow
-            cubes.push_back(Cube(vec3(1., 1., 0.), Color::YELLOW));
+            cubes.push_back(Cube(vec3(0., 0., -1.), Color::YELLOW));
             cubes.back().rotate_y(-180.0f);
 
             // 1. WHITE FACE
 
             // Left 
-            cubes.push_back(Cube(vec3(0., 1., 2.), Color::WHITE, Color::GREEN));
+            cubes.push_back(Cube(vec3(-1., 0., 1.), Color::WHITE, Color::GREEN));
             cubes.back().swap_x();
 
             // Right
-            cubes.push_back(Cube(vec3(2., 1., 2.), Color::WHITE, Color::BLUE));
+            cubes.push_back(Cube(vec3(1., 0., 1.), Color::WHITE, Color::BLUE));
 
             // Top
-            cubes.push_back(Cube(vec3(1., 2., 2.), Color::WHITE, Color::ORANGE));
+            cubes.push_back(Cube(vec3(0., 1., 1.), Color::WHITE, Color::ORANGE));
             cubes.back().rotate_z(90.0f);
 
             // Bottom
-            cubes.push_back(Cube(vec3(1., 0., 2.), Color::WHITE, Color::RED));
+            cubes.push_back(Cube(vec3(0., -1., 1.), Color::WHITE, Color::RED));
             cubes.back().rotate_z(-90.0f);
 
             // Top-Right
-            cubes.push_back(Cube(vec3(2., 2., 2.), Color::WHITE, Color::BLUE, Color::ORANGE));
+            cubes.push_back(Cube(vec3(1., 1., 1.), Color::WHITE, Color::BLUE, Color::ORANGE));
 
             // Top-left
-            cubes.push_back(Cube(vec3(0., 2., 2.), Color::WHITE, Color::GREEN, Color::ORANGE));
+            cubes.push_back(Cube(vec3(-1., 1., 1.), Color::WHITE, Color::GREEN, Color::ORANGE));
             cubes.back().swap_x();
 
             // Bottom Right
-            cubes.push_back(Cube(vec3(2., 0., 2.), Color::WHITE, Color::BLUE, Color::RED));
+            cubes.push_back(Cube(vec3(1., -1., 1.), Color::WHITE, Color::BLUE, Color::RED));
 
             // Bottom Left
-            cubes.push_back(Cube(vec3(0., 0., 2.), Color::WHITE, Color::GREEN, Color::RED));
+            cubes.push_back(Cube(vec3(-1., -1., 1.), Color::WHITE, Color::GREEN, Color::RED));
             cubes.back().swap_x();
             
             // BLUE FACE
 
             // Bottom
-            cubes.push_back(Cube(vec3(2., 0., 1.), Color::BLUE, Color::RED));
+            cubes.push_back(Cube(vec3(1., -1., 0.), Color::BLUE, Color::RED));
             cubes.back().rotate_z(-90.0f);
             cubes.back().rotate_y(90.0f);
 
             // Right
-            cubes.push_back(Cube(vec3(2., 1., 0.), Color::BLUE, Color::YELLOW));
+            cubes.push_back(Cube(vec3(1., 0., -1.), Color::BLUE, Color::YELLOW));
             cubes.back().rotate_y(90.0f);
 
             // Top-Right
-            cubes.push_back(Cube(vec3(2., 2., 0.), Color::BLUE, Color::YELLOW, Color::ORANGE));
+            cubes.push_back(Cube(vec3(1., 1., -1.), Color::BLUE, Color::YELLOW, Color::ORANGE));
             cubes.back().rotate_y(90.0f);
 
             // Bottom-Right
-            cubes.push_back(Cube(vec3(2., 0., 0.), Color::BLUE, Color::YELLOW, Color::RED));
+            cubes.push_back(Cube(vec3(1., -1., -1.), Color::BLUE, Color::YELLOW, Color::RED));
             cubes.back().rotate_y(90.0f);
 
 
             // GREEN FACE
 
             // Bottom
-            cubes.push_back(Cube(vec3(0., 0., 1.), Color::GREEN, Color::RED));
+            cubes.push_back(Cube(vec3(-1., -1., 0.), Color::GREEN, Color::RED));
             cubes.back().rotate_z(-90.0f);
             cubes.back().rotate_y(-90.0f);
 
             // Left
-            cubes.push_back(Cube(vec3(0., 1., 0.), Color::GREEN, Color::YELLOW));
+            cubes.push_back(Cube(vec3(-1., 0., -1.), Color::GREEN, Color::YELLOW));
             cubes.back().swap_x();
             cubes.back().rotate_y(-90.0f);
 
             // Top-Left
-            cubes.push_back(Cube(vec3(0., 2., 0.), Color::GREEN, Color::YELLOW, Color::ORANGE));
+            cubes.push_back(Cube(vec3(-1., 1., -1.), Color::GREEN, Color::YELLOW, Color::ORANGE));
             cubes.back().swap_x();
             cubes.back().rotate_y(-90.0f);
 
             // Bottom-Left
-            cubes.push_back(Cube(vec3(0., 0., 0.), Color::GREEN, Color::YELLOW, Color::RED));
+            cubes.push_back(Cube(vec3(-1., -1., -1.), Color::GREEN, Color::YELLOW, Color::RED));
             cubes.back().swap_x();
             cubes.back().rotate_y(-90.0f);
 
@@ -210,12 +230,12 @@ class RubicsCube {
             // YELLOW FACE
 
             // Top
-            cubes.push_back(Cube(vec3(1., 2., 0.), Color::YELLOW, Color::ORANGE));
+            cubes.push_back(Cube(vec3(0., 1., -1.), Color::YELLOW, Color::ORANGE));
             cubes.back().rotate_z(90.0f);
             cubes.back().rotate_y(-180.0f);
 
             // Bottom
-            cubes.push_back(Cube(vec3(1., 0., 0.), Color::YELLOW, Color::RED));
+            cubes.push_back(Cube(vec3(0., -1., -1.), Color::YELLOW, Color::RED));
             cubes.back().rotate_z(-90.0f);
             cubes.back().rotate_y(-180.0f);
 
@@ -223,19 +243,44 @@ class RubicsCube {
             // 2. ORANGE FACE 
 
             // Right
-            cubes.push_back(Cube(vec3(2., 2., 1.), Color::ORANGE, Color::BLUE));
+            cubes.push_back(Cube(vec3(1., 1., 0.), Color::ORANGE, Color::BLUE));
             cubes.back().rotate_x(-90.0f);
 
             // Left
-            cubes.push_back(Cube(vec3(0., 2., 1.), Color::ORANGE, Color::GREEN));
+            cubes.push_back(Cube(vec3(-1., 1., 0.), Color::ORANGE, Color::GREEN));
             cubes.back().swap_x();
             cubes.back().rotate_x(-90.0f);
-
-
-
-            // cubes.push_back(Cube(vec3(1., 1., 0.), 0., vec3(), Color::WHITE, Color::YELLOW));
-            // cubes.push_back(Cube(vec3(2., 1., 0.), 0., vec3(), Color::WHITE, Color::YELLOW));
-            cout << "size = " << cubes.size() << endl;
-            cout << "test = " << Color::NONE << endl;
         }
+
+    /**
+     * Apply a rubicscube motion
+     */
+    void apply(Motion m) {
+
+        switch (m)
+        {
+        case Motion::F:
+
+            for (auto& cube: cubes) {
+            // Select all the cubes that are on the forward face
+                if (cube.position.z == 2.) {
+                    auto transformation = glm::toMat4(angleAxis(radians(10.0f), vec3(0., 0., 1.)));
+
+                    // Apply a rotation to the po 
+                    cube.apply(transformation);
+                }
+
+            }
+
+
+
+            break;
+        
+        default:
+            break;
+        }
+
+    }
+
+
 };

@@ -14,6 +14,8 @@
 #include "shader.cpp"
 #include "rubicscube.cpp"
 
+// Global variables that hold the state of the game
+RubicsCube game;
 
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -60,6 +62,11 @@ void processInput(GLFWwindow *window)
         cameraPos += cameraUp * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
         cameraPos -= cameraUp * cameraSpeed;
+
+    // Game actions
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+        game.apply(Motion::F);
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -244,7 +251,7 @@ int main()
     // Activate depth buffer
     glEnable(GL_DEPTH_TEST);
 
-    RubicsCube game;
+    Color colors[3] = {Color::NONE, Color::NONE, Color::NONE};
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -272,8 +279,6 @@ int main()
 
         // Render 10 times different cubes
         glBindVertexArray(VAO);
-
-        Color colors[3] = {Color::NONE, Color::NONE, Color::NONE};
 
         // Set the default color for the remaining faces
         glActiveTexture(GL_TEXTURE6);
