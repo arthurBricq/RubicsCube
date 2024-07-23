@@ -64,8 +64,9 @@ void processInput(GLFWwindow *window)
         cameraPos -= cameraUp * cameraSpeed;
 
     // Game actions
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
         game.apply(Motion::F);
+    }
 
 }
 

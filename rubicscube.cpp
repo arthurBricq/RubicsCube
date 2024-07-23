@@ -34,6 +34,8 @@ class Cube {
     public:
         glm::vec3 position;
         glm::quat orientation;
+
+        
         Color color1 = Color::NONE;
         Color color2 = Color::NONE;
         Color color3 = Color::NONE;
@@ -88,16 +90,9 @@ class Cube {
         }
 
         void apply(const mat4 transformation) {
-            // Retrieve the current model
-            glm::mat4 model = glm::mat4(1.0f);
-            glm::mat4 rotation = glm::toMat4(orientation);
-            model = glm::translate(model, position);
-            model = model * rotation;    
-
             // Transform
             vec4 pos(position.x, position.y, position.z, 1.0f);
             vec4 result = transformation * pos;
-
             
             // Retrieve the new state
             position = vec3(result.x, result.y, result.z);
@@ -263,7 +258,7 @@ class RubicsCube {
 
             for (auto& cube: cubes) {
             // Select all the cubes that are on the forward face
-                if (cube.position.z == 2.) {
+                if (cube.position.z == 1.) {
                     auto transformation = glm::toMat4(angleAxis(radians(10.0f), vec3(0., 0., 1.)));
 
                     // Apply a rotation to the po 
