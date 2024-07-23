@@ -313,22 +313,12 @@ int main()
             glActiveTexture(GL_TEXTURE4);
             glBindTexture(GL_TEXTURE_2D, color_to_code(colors[2]));
 
-            // glActiveTexture(GL_TEXTURE3);
-            // glBindTexture(GL_TEXTURE_2D, yellow);
-
-            // glActiveTexture(GL_TEXTURE4);
-            // glBindTexture(GL_TEXTURE_2D, orange);
-
-            // glActiveTexture(GL_TEXTURE5);
-            // glBindTexture(GL_TEXTURE_2D, green);
-
-
             // Create the rotation matrix from the quaternion and translation 
-            glm::mat4 model = glm::mat4(1.0f);
-            glm::mat4 rotation = glm::toMat4(cube.orientation);
-            model = glm::translate(model, cube.position);
-            model = model * rotation;
-            ourShader.setMat4("model", model);
+            // glm::mat4 model = glm::mat4(1.0f);
+            // glm::mat4 rotation = glm::toMat4(cube.orientation);
+            // model = glm::translate(model, cube.position);
+            // model = model * rotation;
+            ourShader.setMat4("model", cube.transform);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }

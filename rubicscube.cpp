@@ -27,15 +27,15 @@ using std::endl;
 class Cube {
     private:
         void set_values(vec3 _pos, float _angle, vec3 _axis) {
-            position = _pos;
-            orientation = angleAxis(radians(_angle), _axis);
+            transform = mat4(1.0f);
+            transform = translate(transform, _pos);
+            // transform = rotate(transform, radians(_angle), _axis);
         }
 
     public:
-        glm::vec3 position;
-        glm::quat orientation;
+        // The transform that brings the cube from (0,0,0) to its actual position
+        glm::mat4 transform;
 
-        
         Color color1 = Color::NONE;
         Color color2 = Color::NONE;
         Color color3 = Color::NONE;
@@ -60,42 +60,42 @@ class Cube {
             color2 = _c2;
             color3 = _c3;
         }
+
+        /// @return Returns the position of this cube
+        vec3 position() const {
+            return vec3(transform[3]);
+        }
         
         /**
          * Swap around the x-axis
          */
         void swap_x() {
-            orientation = angleAxis(radians(180.0f), vec3(0., 0., 1.)) * orientation;
+            transform = rotate(transform, radians(180.0f), vec3(0., 0., 1.));
         }
 
         /**
          * Rotate around the x-axis with a given angle in degrees
          */
         void rotate_x(float _theta) {
-            orientation = angleAxis(radians(_theta), vec3(1., 0., 0.)) * orientation;
+            transform = rotate(transform, radians(_theta), vec3(1., 0., 0.));
         }
 
         /**
          * Rotate around the y-axis with a given angle in degrees
          */
         void rotate_y(float _theta) {
-            orientation = angleAxis(radians(_theta), vec3(0., 1., 0.)) * orientation;
+            transform = rotate(transform, radians(_theta), vec3(0., 1., 0.));
         }
 
         /**
          * Rotate around the z-axis with a given angle in degrees
          */
         void rotate_z(float _theta) {
-            orientation = angleAxis(radians(_theta), vec3(0., 0., 1.)) * orientation;
+            transform = rotate(transform, radians(_theta), vec3(0., 0., 1.));
         }
 
         void apply(const mat4 transformation) {
-            // Transform
-            vec4 pos(position.x, position.y, position.z, 1.0f);
-            vec4 result = transformation * pos;
-            
-            // Retrieve the new state
-            position = vec3(result.x, result.y, result.z);
+            this->transform = transformation * this->transform;
         }
 
         /**
@@ -109,7 +109,6 @@ class Cube {
 
         void debug() const {
             cout << "Colors = " << color1 << "," << color2 << "," << color3 << endl;
-            cout << "Pos    = " << position.x << "," << position.y << endl;
         }
 };
 
@@ -122,7 +121,6 @@ class RubicsCube {
         std::vector<Cube> cubes;
 
         RubicsCube() {
-
             // CENTERS
 
             // White
@@ -181,10 +179,10 @@ class RubicsCube {
             
             // BLUE FACE
 
-            // Bottom
+            // Botto
             cubes.push_back(Cube(vec3(1., -1., 0.), Color::BLUE, Color::RED));
-            cubes.back().rotate_z(-90.0f);
             cubes.back().rotate_y(90.0f);
+            cubes.back().rotate_z(-90.0f);
 
             // Right
             cubes.push_back(Cube(vec3(1., 0., -1.), Color::BLUE, Color::YELLOW));
@@ -203,36 +201,36 @@ class RubicsCube {
 
             // Bottom
             cubes.push_back(Cube(vec3(-1., -1., 0.), Color::GREEN, Color::RED));
-            cubes.back().rotate_z(-90.0f);
             cubes.back().rotate_y(-90.0f);
+            cubes.back().rotate_z(-90.0f);
 
             // Left
             cubes.push_back(Cube(vec3(-1., 0., -1.), Color::GREEN, Color::YELLOW));
-            cubes.back().swap_x();
             cubes.back().rotate_y(-90.0f);
+            cubes.back().swap_x();
 
             // Top-Left
             cubes.push_back(Cube(vec3(-1., 1., -1.), Color::GREEN, Color::YELLOW, Color::ORANGE));
-            cubes.back().swap_x();
             cubes.back().rotate_y(-90.0f);
+            cubes.back().swap_x();
 
             // Bottom-Left
             cubes.push_back(Cube(vec3(-1., -1., -1.), Color::GREEN, Color::YELLOW, Color::RED));
-            cubes.back().swap_x();
             cubes.back().rotate_y(-90.0f);
+            cubes.back().swap_x();
 
 
             // YELLOW FACE
 
             // Top
             cubes.push_back(Cube(vec3(0., 1., -1.), Color::YELLOW, Color::ORANGE));
-            cubes.back().rotate_z(90.0f);
             cubes.back().rotate_y(-180.0f);
+            cubes.back().rotate_z(90.0f);
 
             // Bottom
             cubes.push_back(Cube(vec3(0., -1., -1.), Color::YELLOW, Color::RED));
-            cubes.back().rotate_z(-90.0f);
             cubes.back().rotate_y(-180.0f);
+            cubes.back().rotate_z(-90.0f);
 
 
             // 2. ORANGE FACE 
@@ -243,8 +241,8 @@ class RubicsCube {
 
             // Left
             cubes.push_back(Cube(vec3(-1., 1., 0.), Color::ORANGE, Color::GREEN));
-            cubes.back().swap_x();
             cubes.back().rotate_x(-90.0f);
+            cubes.back().swap_x();
         }
 
     /**
@@ -258,7 +256,7 @@ class RubicsCube {
 
             for (auto& cube: cubes) {
             // Select all the cubes that are on the forward face
-                if (cube.position.z == 1.) {
+                if (cube.position().z == 1.) {
                     auto transformation = glm::toMat4(angleAxis(radians(10.0f), vec3(0., 0., 1.)));
 
                     // Apply a rotation to the po 
