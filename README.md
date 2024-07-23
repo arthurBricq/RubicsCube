@@ -2,4 +2,4 @@
 
  Simple project to learn OpenGL
 
- ![demo.gif]()
+ ![](demo.gif)
