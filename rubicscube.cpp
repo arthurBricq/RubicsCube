@@ -129,14 +129,11 @@ class RubicsCube {
             cubes.push_back(Cube(vec3(0., 1., 1.), Color::GREEN));
             cubes.back().rotate_y(-90.0f);
 
+            // Yellow
+            cubes.push_back(Cube(vec3(1., 1., 0.), Color::YELLOW));
+            cubes.back().rotate_y(-180.0f);
 
             // 1. WHITE FACE
-
-            // Left = green
-            // Right = Blue
-            // Top = Orange
-            // Bottom = Red
-
 
             // Left 
             cubes.push_back(Cube(vec3(0., 1., 2.), Color::WHITE, Color::GREEN));
@@ -166,12 +163,64 @@ class RubicsCube {
             // Bottom Left
             cubes.push_back(Cube(vec3(0., 0., 2.), Color::WHITE, Color::GREEN, Color::RED));
             cubes.back().swap_x();
-
-
             
-            // 2. ORANGE FACE 
-            // bottom is already done
+            // BLUE FACE
 
+            // Bottom
+            cubes.push_back(Cube(vec3(2., 0., 1.), Color::BLUE, Color::RED));
+            cubes.back().rotate_z(-90.0f);
+            cubes.back().rotate_y(90.0f);
+
+            // Right
+            cubes.push_back(Cube(vec3(2., 1., 0.), Color::BLUE, Color::YELLOW));
+            cubes.back().rotate_y(90.0f);
+
+            // Top-Right
+            cubes.push_back(Cube(vec3(2., 2., 0.), Color::BLUE, Color::YELLOW, Color::ORANGE));
+            cubes.back().rotate_y(90.0f);
+
+            // Bottom-Right
+            cubes.push_back(Cube(vec3(2., 0., 0.), Color::BLUE, Color::YELLOW, Color::RED));
+            cubes.back().rotate_y(90.0f);
+
+
+            // GREEN FACE
+
+            // Bottom
+            cubes.push_back(Cube(vec3(0., 0., 1.), Color::GREEN, Color::RED));
+            cubes.back().rotate_z(-90.0f);
+            cubes.back().rotate_y(-90.0f);
+
+            // Left
+            cubes.push_back(Cube(vec3(0., 1., 0.), Color::GREEN, Color::YELLOW));
+            cubes.back().swap_x();
+            cubes.back().rotate_y(-90.0f);
+
+            // Top-Left
+            cubes.push_back(Cube(vec3(0., 2., 0.), Color::GREEN, Color::YELLOW, Color::ORANGE));
+            cubes.back().swap_x();
+            cubes.back().rotate_y(-90.0f);
+
+            // Bottom-Left
+            cubes.push_back(Cube(vec3(0., 0., 0.), Color::GREEN, Color::YELLOW, Color::RED));
+            cubes.back().swap_x();
+            cubes.back().rotate_y(-90.0f);
+
+
+            // YELLOW FACE
+
+            // Top
+            cubes.push_back(Cube(vec3(1., 2., 0.), Color::YELLOW, Color::ORANGE));
+            cubes.back().rotate_z(90.0f);
+            cubes.back().rotate_y(-180.0f);
+
+            // Bottom
+            cubes.push_back(Cube(vec3(1., 0., 0.), Color::YELLOW, Color::RED));
+            cubes.back().rotate_z(-90.0f);
+            cubes.back().rotate_y(-180.0f);
+
+
+            // 2. ORANGE FACE 
 
             // Right
             cubes.push_back(Cube(vec3(2., 2., 1.), Color::ORANGE, Color::BLUE));
