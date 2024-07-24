@@ -16,10 +16,18 @@
 
 // Global variables that hold the state of the game
 RubicsCube game;
+RotationManager rotation_manager(&game);
 
-glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+// Camera state
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+
+// Key states for the game
+bool keyMajPressed = false;
+bool keyFPressed = false;
+bool keyRPressed = false;
+bool keyUPressed = false;
 
 unsigned int yellow, red, white, blue, orange, green, none;
 
@@ -63,9 +71,26 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
         cameraPos -= cameraUp * cameraSpeed;
 
-    // Game actions
+
+    // Detect if maj is pressed (to do backward motion)
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        if (!keyMajPressed) keyMajPressed = true;
+    } else if (keyMajPressed) {
+        keyMajPressed = false;
+    }
+
+    // Game actions: F, R, U
+
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
-        game.apply(Motion::F);
+        if (!keyFPressed) {
+            keyFPressed = true;
+            if (rotation_manager.is_free()) {
+                rotation_manager.apply(Motion::F, !keyMajPressed);
+            }
+        }
+    } else if (keyFPressed) {
+        keyFPressed = false;
     }
 
 }
@@ -198,19 +223,6 @@ int main()
         -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 5.0f
         };
 
-    glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(2.0f, 5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f, 3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f, 2.0f, -2.5f),
-        glm::vec3(1.5f, 0.2f, -1.5f),
-        glm::vec3(-1.3f, 1.0f, -1.5f)
-        };
-
     // Setup VBO, VAO and EBO
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -261,6 +273,9 @@ int main()
         processInput(window);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // Makes every rotation 
+        rotation_manager.step();
 
         // activate shader
         ourShader.use();

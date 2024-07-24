@@ -94,7 +94,7 @@ class Cube {
             transform = rotate(transform, radians(_theta), vec3(0., 0., 1.));
         }
 
-        void apply(const mat4 transformation) {
+        void apply(const mat4& transformation) {
             this->transform = transformation * this->transform;
         }
 
@@ -196,7 +196,6 @@ class RubicsCube {
             cubes.push_back(Cube(vec3(1., -1., -1.), Color::BLUE, Color::YELLOW, Color::RED));
             cubes.back().rotate_y(90.0f);
 
-
             // GREEN FACE
 
             // Bottom
@@ -219,7 +218,6 @@ class RubicsCube {
             cubes.back().rotate_y(-90.0f);
             cubes.back().swap_x();
 
-
             // YELLOW FACE
 
             // Top
@@ -231,7 +229,6 @@ class RubicsCube {
             cubes.push_back(Cube(vec3(0., -1., -1.), Color::YELLOW, Color::RED));
             cubes.back().rotate_y(-180.0f);
             cubes.back().rotate_z(-90.0f);
-
 
             // 2. ORANGE FACE 
 
@@ -245,27 +242,56 @@ class RubicsCube {
             cubes.back().swap_x();
         }
 
+
+
+};
+
+
+/**
+ * A class in charge of rotating slowly the faces of a cube
+ */
+class RotationManager {
+public:
+
+    RotationManager(RubicsCube* _game) {
+        game = _game;
+        angular_step = radians(5.0f);
+    }
+
+    bool is_free() {return !is_running;} 
+
+    void step() {
+        if (is_running && remaining_angle > angular_step) {
+            remaining_angle -= angular_step;
+            for (const auto& i: indices) 
+                game->cubes[i].apply(current_transform);
+        } else if (is_running) {
+            is_running = false;
+        }
+    }
+
     /**
      * Apply a rubicscube motion
      */
-    void apply(Motion m) {
+    void apply(Motion m, bool forward) {
+        // Re-init different values
+        is_running = true;
+        remaining_angle = radians(90.f);
+        indices = std::vector<unsigned int>(9, 0);
 
+        unsigned int i = 0;
         switch (m)
         {
         case Motion::F:
+            current_transform = glm::toMat4(angleAxis(forward ? angular_step : -angular_step, vec3(0., 0., 1.)));
 
-            for (auto& cube: cubes) {
-            // Select all the cubes that are on the forward face
-                if (cube.position().z == 1.) {
-                    auto transformation = glm::toMat4(angleAxis(radians(10.0f), vec3(0., 0., 1.)));
-
-                    // Apply a rotation to the po 
-                    cube.apply(transformation);
+            // Select all the cubes that are on the desired face
+            for (uint j = 0; j < game->cubes.size(); j++) {
+                if (game->cubes[j].position().z == 1. ) {
+                    indices[i] = j;
+                    i++;
                 }
-
             }
-
-
 
             break;
         
@@ -275,5 +301,22 @@ class RubicsCube {
 
     }
 
+    private:
+        /// Current game
+        RubicsCube* game;
 
+        /// At each step, moves of this amount
+        float angular_step;
+
+        /// Keep tracks whether a motion is being applied
+        bool is_running = false;
+
+        /// Current indices of the cubes being moved
+        std::vector<unsigned int> indices;
+
+        /// Current advance
+        float remaining_angle;
+
+        /// Current motion being applied
+        mat4 current_transform;
 };
