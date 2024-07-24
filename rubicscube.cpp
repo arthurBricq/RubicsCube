@@ -115,6 +115,8 @@ class Cube {
 
 /**
  * The model for a rubicscube is simply a list of cubes...
+ * 
+ * The constructor of this class instantiates all the 26 cubes with their right color and their right positions/orientation.
  */
 class RubicsCube {
     public:
@@ -248,7 +250,9 @@ class RubicsCube {
 
 
 /**
- * A class in charge of rotating slowly the faces of a cube
+ * A class in charge of rotating slowly the faces of a cube.
+ * 
+ * The goal of having this class is to not put inside `RubicsCube` a lot of geometrical logic.
  */
 class RotationManager {
 public:
@@ -273,7 +277,7 @@ public:
     /**
      * Apply a rubicscube motion
      */
-    void apply(Motion m, bool forward) {
+    void start_motion(Motion m, bool forward) {
         // Re-init different values
         is_running = true;
         remaining_angle = radians(90.f);
@@ -288,6 +292,32 @@ public:
             // Select all the cubes that are on the desired face
             for (uint j = 0; j < game->cubes.size(); j++) {
                 if (game->cubes[j].position().z == 1. ) {
+                    indices[i] = j;
+                    i++;
+                }
+            }
+
+            break;
+
+        case Motion::R:
+            current_transform = glm::toMat4(angleAxis(forward ? angular_step : -angular_step, vec3(1., 0., 0.)));
+
+            // Select all the cubes that are on the desired face
+            for (uint j = 0; j < game->cubes.size(); j++) {
+                if (game->cubes[j].position().x == 1. ) {
+                    indices[i] = j;
+                    i++;
+                }
+            }
+
+            break;
+
+        case Motion::U:
+            current_transform = glm::toMat4(angleAxis(forward ? angular_step : -angular_step, vec3(0., 1., 0.)));
+
+            // Select all the cubes that are on the desired face
+            for (uint j = 0; j < game->cubes.size(); j++) {
+                if (game->cubes[j].position().y == 1. ) {
                     indices[i] = j;
                     i++;
                 }

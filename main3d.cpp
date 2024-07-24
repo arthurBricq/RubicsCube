@@ -86,13 +86,34 @@ void processInput(GLFWwindow *window)
         if (!keyFPressed) {
             keyFPressed = true;
             if (rotation_manager.is_free()) {
-                rotation_manager.apply(Motion::F, !keyMajPressed);
+                rotation_manager.start_motion(Motion::F, !keyMajPressed);
             }
         }
     } else if (keyFPressed) {
         keyFPressed = false;
     }
+    
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+        if (!keyRPressed) {
+            keyRPressed = true;
+            if (rotation_manager.is_free()) {
+                rotation_manager.start_motion(Motion::R, !keyMajPressed);
+            }
+        }
+    } else if (keyRPressed) {
+        keyRPressed = false;
+    }
 
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+        if (!keyUPressed) {
+            keyUPressed = true;
+            if (rotation_manager.is_free()) {
+                rotation_manager.start_motion(Motion::U, !keyMajPressed);
+            }
+        }
+    } else if (keyUPressed) {
+        keyUPressed = false;
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
