@@ -23,3 +23,9 @@ To move counter-clockwise, press 'SHIFT'.
 This project is yet another simple project to learn yet another programming concept: OpenGL.
 
 The model of the rubicscube is in `rubicscube.cpp`. Each of the 26 cube is represented by a `Cube` object, which contains a transform (translation & rotation).
+
+## Roadmap
+
+- Draw the 'selected face'
+    - use uniform varable that is set at each little cube
+- Be able to select another 'main' face

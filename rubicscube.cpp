@@ -245,6 +245,19 @@ class RubicsCube {
         }
 
 
+        /**
+         * Provided with a reference of one of the cubes on the list, returns true if the cube is on the main face.
+         */
+        bool is_cube_on_selected_face(const Cube& c) {
+            // TODO
+            return true;
+        }
+
+
+    private:
+        // The current face is the color of the center.
+        Color selected_face = Color::WHITE;
+
 
 };
 

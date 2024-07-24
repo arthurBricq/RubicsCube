@@ -124,6 +124,9 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+/**
+ * A function that loads a texture from a given path
+ */
 void load_gl_texture(unsigned int& id, const char* path) {
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
@@ -314,48 +317,33 @@ int main()
         ourShader.setMat4("view", view);
         ourShader.setMat4("projection", projection);
 
-        // Render 10 times different cubes
         glBindVertexArray(VAO);
-
-        // Set the default color for the remaining faces
-        glActiveTexture(GL_TEXTURE6);
-        glBindTexture(GL_TEXTURE_2D, none);
-
         for (const auto& cube: game.cubes) {
-            // We have to bind the proper colors
+            // Get the colors of the cube
             cube.fillColors(colors);
 
             // FRONT 
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, color_to_code(colors[0]));
-
-            // Also set the back color
-            // glActiveTexture(GL_TEXTURE0);
-            // glBindTexture(GL_TEXTURE_2D, color_to_code(colors[0]));
-
             // RIGHT
             glActiveTexture(GL_TEXTURE3);
             glBindTexture(GL_TEXTURE_2D, color_to_code(colors[1]));
-
-            // Also set the left color to allow for swapping axis
-            // glActiveTexture(GL_TEXTURE2);
-            // glBindTexture(GL_TEXTURE_2D, color_to_code(colors[1]));
-
             // TOP
             glActiveTexture(GL_TEXTURE5);
             glBindTexture(GL_TEXTURE_2D, color_to_code(colors[2]));
-
             // also set the BOTTOM color to allow for swapping axis
             glActiveTexture(GL_TEXTURE4);
             glBindTexture(GL_TEXTURE_2D, color_to_code(colors[2]));
 
-            // Create the rotation matrix from the quaternion and translation 
-            // glm::mat4 model = glm::mat4(1.0f);
-            // glm::mat4 rotation = glm::toMat4(cube.orientation);
-            // model = glm::translate(model, cube.position);
-            // model = model * rotation;
-            ourShader.setMat4("model", cube.transform);
+            // Is this cube on the main face ? 
+            if (game.is_cube_on_selected_face(cube)) {
 
+            } else {
+
+            }
+
+            // Set the model matrix to the transform of the cube and then render
+            ourShader.setMat4("model", cube.transform);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
