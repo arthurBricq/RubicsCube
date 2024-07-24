@@ -291,7 +291,7 @@ public:
 
             // Select all the cubes that are on the desired face
             for (uint j = 0; j < game->cubes.size(); j++) {
-                if (game->cubes[j].position().z == 1. ) {
+                if (abs(game->cubes[j].position().z - 1.0f) < 0.001f) {
                     indices[i] = j;
                     i++;
                 }
@@ -304,7 +304,7 @@ public:
 
             // Select all the cubes that are on the desired face
             for (uint j = 0; j < game->cubes.size(); j++) {
-                if (game->cubes[j].position().x == 1. ) {
+                if (abs(game->cubes[j].position().x - 1.0f) < 0.001f) {
                     indices[i] = j;
                     i++;
                 }
@@ -317,7 +317,7 @@ public:
 
             // Select all the cubes that are on the desired face
             for (uint j = 0; j < game->cubes.size(); j++) {
-                if (game->cubes[j].position().y == 1. ) {
+                if (abs(game->cubes[j].position().y - 1.0f) < 0.001f) {
                     indices[i] = j;
                     i++;
                 }
