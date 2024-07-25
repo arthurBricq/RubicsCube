@@ -291,6 +291,12 @@ int main()
     // Activate depth buffer
     glEnable(GL_DEPTH_TEST);
 
+    game.set_main_color(Color::BLUE);
+
+    // Wireframe mode ?
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
     // render loop
     Color colors[3] = {Color::NONE, Color::NONE, Color::NONE};
     while (!glfwWindowShouldClose(window))

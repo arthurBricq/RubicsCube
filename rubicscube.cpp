@@ -1,4 +1,5 @@
 #include <vector>
+#include <array>
 #include <iostream>
 
 #include <glm/glm.hpp>
@@ -6,12 +7,64 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+using glm::vec3;
+
+class Color
+{
+public:
+  enum Value : uint8_t
+  {
+    WHITE, RED, YELLOW, ORANGE, GREEN, BLUE, NONE 
+  };
+
+  Color() = default;
+  constexpr Color(Value aColor) : value(aColor) { }
+
+  // Allow switch and comparisons.
+  constexpr operator Value() const { return value; }
+  // Prevent usage: if(fruit)
+  explicit operator bool() const = delete;        
+  constexpr bool operator==(Color a) const { return value == a.value; }
+  constexpr bool operator!=(Color a) const { return value != a.value; }
+
+  /**
+   * Returns the position of the center associated with this color
+   */
+  vec3 center_position() const {
+    switch (value)
+    {
+    case WHITE: return vec3(0., 0., 1.0);
+    case ORANGE: return vec3(0., 1., 0.0);
+    case BLUE: return vec3(1., 0., 0.0);
+    case GREEN: return vec3(-1., 0., 0.0);
+    case YELLOW: return vec3(0., 0., -1.0);
+    case RED: return vec3(0., -1., 0.0);
+    default: return vec3();
+    }
+  }
+
+  /**
+   * Returns the (R)ight and (U)p neighor face.
+   */
+  std::array<Color, 2> neighbors() const {
+    switch (value)
+    {
+    case WHITE: return {Color::BLUE, Color::ORANGE};
+    case BLUE: return {Color::YELLOW, Color::ORANGE};
+    default: return {Color::YELLOW, Color::ORANGE};
+    }
+  }
+
+private:
+  Value value;
+};
+
 /**
  * The colors of the rubicscube
  */
-enum Color {
-    WHITE, RED, YELLOW, ORANGE, GREEN, BLUE, NONE 
-};
+// enum Color {
+//     WHITE, RED, YELLOW, ORANGE, GREEN, BLUE, NONE 
+// };
 
 enum Motion {
     F, R, U
@@ -302,15 +355,24 @@ public:
     }
 
     /**
-     * Apply a rubicscube motion
+     * Apply a rubicscube motion.
+     * 
+     * This function does the required computing to configure the motion.
      */
     void start_motion(Motion m, bool forward) {
         // Re-init different values
         is_running = true;
         remaining_angle = radians(90.f);
-        indices = std::vector<unsigned int>(9, 0);
 
+        // Find the indices of the cube on the rotating frame.
+        indices = std::vector<unsigned int>(9, 0);
         unsigned int i = 0;
+
+
+        Color main_color = game->current_face;
+        std::array<Color, 2> others = main_color.neighbors();
+
+
         switch (m)
         {
         case Motion::F:
