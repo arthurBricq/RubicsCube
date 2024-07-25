@@ -8,6 +8,8 @@
 #include <glm/gtx/quaternion.hpp>
 
 using glm::vec3;
+using std::cout;
+using std::endl;
 
 class Color
 {
@@ -28,7 +30,9 @@ public:
   constexpr bool operator!=(Color a) const { return value != a.value; }
 
   /**
-   * Returns the position of the center associated with this color
+   * Returns the position of the center associated with this color.
+   * 
+   * As it happens, the rotation axis of each face is also the position
    */
   vec3 center_position() const {
     switch (value)
@@ -51,7 +55,11 @@ public:
     {
     case WHITE: return {Color::BLUE, Color::ORANGE};
     case BLUE: return {Color::YELLOW, Color::ORANGE};
-    default: return {Color::YELLOW, Color::ORANGE};
+    case YELLOW: return {Color::GREEN, Color::ORANGE};
+    case GREEN: return {Color::WHITE, Color::ORANGE};
+    case ORANGE: return {Color::BLUE, Color::YELLOW};
+    case RED: return {Color::GREEN, Color::WHITE};
+    default: return {Color::BLUE, Color::YELLOW};
     }
   }
 
@@ -364,60 +372,38 @@ public:
         is_running = true;
         remaining_angle = radians(90.f);
 
-        // Find the indices of the cube on the rotating frame.
-        indices = std::vector<unsigned int>(9, 0);
-        unsigned int i = 0;
-
-
+        // Find the color of the face that will be rotated
         Color main_color = game->current_face;
         std::array<Color, 2> others = main_color.neighbors();
-
-
+        Color rotated_color;
         switch (m)
         {
         case Motion::F:
-            current_transform = glm::toMat4(angleAxis(forward ? angular_step : -angular_step, vec3(0., 0., 1.)));
-
-            // Select all the cubes that are on the desired face
-            for (uint j = 0; j < game->cubes.size(); j++) {
-                if (abs(game->cubes[j].position().z - 1.0f) < 0.001f) {
-                    indices[i] = j;
-                    i++;
-                }
-            }
-
+            rotated_color = main_color;
             break;
-
         case Motion::R:
-            current_transform = glm::toMat4(angleAxis(forward ? angular_step : -angular_step, vec3(1., 0., 0.)));
-
-            // Select all the cubes that are on the desired face
-            for (uint j = 0; j < game->cubes.size(); j++) {
-                if (abs(game->cubes[j].position().x - 1.0f) < 0.001f) {
-                    indices[i] = j;
-                    i++;
-                }
-            }
-
+            rotated_color = others[0];
             break;
-
         case Motion::U:
-            current_transform = glm::toMat4(angleAxis(forward ? angular_step : -angular_step, vec3(0., 1., 0.)));
-
-            // Select all the cubes that are on the desired face
-            for (uint j = 0; j < game->cubes.size(); j++) {
-                if (abs(game->cubes[j].position().y - 1.0f) < 0.001f) {
-                    indices[i] = j;
-                    i++;
-                }
-            }
-
-            break;
-        
-        default:
+            rotated_color = others[1];
             break;
         }
 
+        // Find the indices of the cube on the rotating frame.
+        // Go Through all cubes and find those that have a distance of 1.0 with the main face
+        indices = {};
+        vec3 center_pos = rotated_color.center_position();
+        for (uint j = 0; j < game->cubes.size(); j++) {
+            float distance = glm::length(center_pos - game->cubes[j].position());
+            if (distance < 1.5f) {
+                // Skip other centers, as they also pass the previous geometrical rule
+                if (distance > 0.01f && game->cubes[j].is_center) continue;
+                indices.push_back(j);
+            }
+        }
+
+        // Set the motion
+        current_transform = glm::toMat4(angleAxis(forward ? angular_step : -angular_step, center_pos));
     }
 
     private:

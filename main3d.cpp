@@ -29,6 +29,13 @@ bool keyFPressed = false;
 bool keyRPressed = false;
 bool keyUPressed = false;
 
+bool key1_pressed = false;
+bool key2_pressed = false;
+bool key3_pressed = false;
+bool key4_pressed = false;
+bool key5_pressed = false;
+bool key6_pressed = false;
+
 unsigned int yellow, red, white, blue, orange, green, none;
 
 unsigned int color_to_code(Color c) {
@@ -114,6 +121,64 @@ void processInput(GLFWwindow *window)
     } else if (keyUPressed) {
         keyUPressed = false;
     }
+
+    // Game actions: 1,2,3,4,5,6 (to change colors)
+
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+        if (!key1_pressed) {
+            key1_pressed = true;
+            game.set_main_color(Color::WHITE);
+        }
+    } else if (key1_pressed) {
+        key1_pressed = false;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+        if (!key2_pressed) {
+            key2_pressed = true;
+            game.set_main_color(Color::BLUE);
+        }
+    } else if (key2_pressed) {
+        key2_pressed = false;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+        if (!key3_pressed) {
+            key3_pressed = true;
+            game.set_main_color(Color::YELLOW);
+        }
+    } else if (key3_pressed) {
+        key3_pressed = false;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+        if (!key4_pressed) {
+            key4_pressed = true;
+            game.set_main_color(Color::GREEN);
+        }
+    } else if (key4_pressed) {
+        key4_pressed = false;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+        if (!key5_pressed) {
+            key5_pressed = true;
+            game.set_main_color(Color::RED);
+        }
+    } else if (key5_pressed) {
+        key5_pressed = false;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS) {
+        if (!key6_pressed) {
+            key6_pressed = true;
+            game.set_main_color(Color::ORANGE);
+        }
+    } else if (key6_pressed) {
+        key6_pressed = false;
+    }
+
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -295,7 +360,6 @@ int main()
 
     // Wireframe mode ?
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 
     // render loop
     Color colors[3] = {Color::NONE, Color::NONE, Color::NONE};
