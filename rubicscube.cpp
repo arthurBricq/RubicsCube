@@ -35,6 +35,7 @@ class Cube {
     public:
         // The transform that brings the cube from (0,0,0) to its actual position
         glm::mat4 transform;
+        bool is_center = false;
 
         Color color1 = Color::NONE;
         Color color2 = Color::NONE;
@@ -66,6 +67,10 @@ class Cube {
             return vec3(transform[3]);
         }
         
+        void set_center() {
+            is_center = true;
+        }
+
         /**
          * Swap around the x-axis
          */
@@ -121,32 +126,39 @@ class Cube {
 class RubicsCube {
     public:
         std::vector<Cube> cubes;
+        Color current_face = Color::WHITE;
 
         RubicsCube() {
             // CENTERS
 
             // White
             cubes.push_back(Cube(vec3(0., 0., 1.), Color::WHITE));
+            cubes.back().set_center();
 
             // Orange
             cubes.push_back(Cube(vec3(0., 1., 0.), Color::ORANGE));
             cubes.back().rotate_x(-90.0f);
+            cubes.back().set_center();
 
             // Red
             cubes.push_back(Cube(vec3(0., -1., 0.), Color::RED));
             cubes.back().rotate_x(90.0f);
+            cubes.back().set_center();
 
             // Blue
             cubes.push_back(Cube(vec3(1., 0., 0.), Color::BLUE));
             cubes.back().rotate_y(90.0f);
+            cubes.back().set_center();
 
             // Green
             cubes.push_back(Cube(vec3(-1., 0., 0.), Color::GREEN));
             cubes.back().rotate_y(-90.0f);
+            cubes.back().set_center();
 
             // Yellow
             cubes.push_back(Cube(vec3(0., 0., -1.), Color::YELLOW));
             cubes.back().rotate_y(-180.0f);
+            cubes.back().set_center();
 
             // 1. WHITE FACE
 
@@ -244,20 +256,22 @@ class RubicsCube {
             cubes.back().swap_x();
         }
 
-
-        /**
-         * Provided with a reference of one of the cubes on the list, returns true if the cube is on the main face.
-         */
-        bool is_cube_on_selected_face(const Cube& c) {
-            // TODO
-            return true;
+        void set_main_color(Color _c) {
+            current_face = _c;
         }
 
+        /**
+         * Returns true if the cube is on the main face.
+         */
+        bool is_cube_on_selected_face(const Cube& c) const {
+            // TODO this method does not work.
+            //      the best thing to do would be to use an attribute on each cube.
+            return c.color1 == current_face && c.is_center;
+        }
 
     private:
         // The current face is the color of the center.
         Color selected_face = Color::WHITE;
-
 
 };
 

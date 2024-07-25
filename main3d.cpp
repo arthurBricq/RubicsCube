@@ -127,7 +127,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 /**
  * A function that loads a texture from a given path
  */
-void load_gl_texture(unsigned int& id, const char* path) {
+void load_gl_texture(unsigned int& id, const char* path, bool rgba = false) {
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -140,7 +140,10 @@ void load_gl_texture(unsigned int& id, const char* path) {
     unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        if (rgba)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        else
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
@@ -273,7 +276,7 @@ int main()
     load_gl_texture(blue, "/home/arthur/dev/cpp/tuto1/resources/blue.png");
     load_gl_texture(orange, "/home/arthur/dev/cpp/tuto1/resources/orange.png");
     load_gl_texture(green, "/home/arthur/dev/cpp/tuto1/resources/green.png");
-    load_gl_texture(none, "/home/arthur/dev/cpp/tuto1/resources/none.png");
+    load_gl_texture(none, "/home/arthur/dev/cpp/tuto1/resources/selected.png", true);
 
     ourShader.use();
 
@@ -288,9 +291,8 @@ int main()
     // Activate depth buffer
     glEnable(GL_DEPTH_TEST);
 
-    Color colors[3] = {Color::NONE, Color::NONE, Color::NONE};
-
     // render loop
+    Color colors[3] = {Color::NONE, Color::NONE, Color::NONE};
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -317,6 +319,9 @@ int main()
         ourShader.setMat4("view", view);
         ourShader.setMat4("projection", projection);
 
+        glActiveTexture(GL_TEXTURE6);
+        glBindTexture(GL_TEXTURE_2D, none);
+
         glBindVertexArray(VAO);
         for (const auto& cube: game.cubes) {
             // Get the colors of the cube
@@ -336,11 +341,7 @@ int main()
             glBindTexture(GL_TEXTURE_2D, color_to_code(colors[2]));
 
             // Is this cube on the main face ? 
-            if (game.is_cube_on_selected_face(cube)) {
-
-            } else {
-
-            }
+            ourShader.setBool("onCurrentFace", game.is_cube_on_selected_face(cube));
 
             // Set the model matrix to the transform of the cube and then render
             ourShader.setMat4("model", cube.transform);
